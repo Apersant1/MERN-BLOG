@@ -2,6 +2,7 @@
 import bcrypt from "bcrypt";
 import UserModel from "../models/User.js";
 import jwt from "jsonwebtoken";
+import TaskModel from "../models/Task.js";
 
 export const register = async (req, res) => {
     try {
@@ -12,10 +13,14 @@ export const register = async (req, res) => {
         const hash = await bcrypt.hash(password, salt);
 
         const doc = new UserModel({
-            email: req.body.email,
-            fullname: req.body.fullname,
-            avatarUrl: req.body.avatarUrl,
+            login:req.body.login,
             passwordHash:hash,
+            email:req.body.email,
+            fullname: req.body.fullname,
+            group:req.body.group,
+            role:req.body.role,
+            avatarUrl: req.body.avatarUrl,
+
         });
         const user = await doc.save();
         const token = jwt.sign({
@@ -36,13 +41,10 @@ export const register = async (req, res) => {
 
 export const login = async(req,res)=>{
     try{
-        const user =  await UserModel.findOne({email: req.body.email})
-        if(!user){
-            return res.status(400).json('User was not found!')
-        }
+        const user =  await UserModel.findOne({login: req.body.login});
         const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
 
-        if(!isValidPass){
+        if(!user || !isValidPass){
             return res.status(400).json('Wrong login or password!')
         }
 
@@ -71,6 +73,28 @@ export const profile = async (req,res)=>{
         const {passwordHash,...userData} = user._doc;
         res.json(userData)
 
+    }catch (err) {
+        console.log(err);
+        res.status(500).json({message: 'Don\'t have access! :('})
+    }
+};
+
+export const remove = async (req,res)=>{
+    try{
+        const userId = req.params.id
+        UserModel.findOneAndDelete({
+            _id: userId
+        }, (err, doc) => {
+            if (err) {
+                return res.status(400).json({message: 'Failed to delete current user! :('})
+            }
+            if (!doc) {
+                return res.status(404).json({message: 'User Not Found! :('})
+            }
+            res.json({
+                "success delete user": true
+            });
+        })
     }catch (err) {
         console.log(err);
         res.status(500).json({message: 'Don\'t have access! :('})

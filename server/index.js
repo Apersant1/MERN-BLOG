@@ -4,21 +4,28 @@ import multer from 'multer'
 import fs from 'fs'
 import cors from 'cors'
 //VALIDATIONS
-import {loginValidation, PostCreateValidation, registerValidation} from "./validations/validations.js";
+import {
+    loginValidation,
+    SubjectCreateValidation,
+    registerValidation,
+    TaskCreateValidation,
+    TaskEditValidation
+} from "./validations/validations.js";
 //CONTROLLERS
-import {UserController, PostController} from  './controllers/index.js'
+import {UserController, SubjectController,TaskController} from  './controllers/index.js'
 //UTILS
 import {handleValidationErrors, CheckSignIn} from "./utils/index.js";
-import {getLastTags} from "./controllers/PostController.js";
+import checkSignIn from "./utils/CheckSignIn.js";
 
 
-mongoose.connect('mongodb+srv://dbUser:Appersant1@cluster0.bxg9h.mongodb.net/blog?retryWrites=true&w=majority')
+mongoose.connect('mongodb://192.168.43.140:27017')
     .then(() => {
         console.log("Seccess connect to DB")
     })
     .catch(err => {
         console.log("eERR", err)
     });
+
 
 const storage = multer.diskStorage({
     destination: (_, __, cb) => {
@@ -41,24 +48,27 @@ app.use('/uploads',express.static('uploads'));
 app.post('/signin',loginValidation,handleValidationErrors,UserController.login)
 app.post('/signup', registerValidation,handleValidationErrors, UserController.register);
 app.get('/profile',CheckSignIn, UserController.profile);
+app.delete('/users/delete/:id',CheckSignIn,UserController.remove)
 
 
-app.get('/tags',PostController.getLastTags);
+app.get('/subjects/',checkSignIn,SubjectController.getAll);
+app.get('/subject/:id',checkSignIn,SubjectController.getOne);
+app.post('/subject/create',CheckSignIn,SubjectCreateValidation,handleValidationErrors,SubjectController.create);
+app.delete('/subject/:id',CheckSignIn,SubjectController.remove);
+app.patch('/subject/:id',CheckSignIn,SubjectCreateValidation,handleValidationErrors,SubjectController.edit);
 
 
-app.get('/posts',PostController.getAll)
-app.get('/posts/tags',PostController.getLastTags)
-app.get('/posts/:id',PostController.getOne)
-app.post('/posts',CheckSignIn,PostCreateValidation,handleValidationErrors,PostController.create);
-app.patch('/posts/:id',CheckSignIn,PostCreateValidation,handleValidationErrors,PostController.update);
-app.delete('/posts/:id',CheckSignIn,PostController.remove);
-
-
-app.post('/upload', CheckSignIn, upload.single('image'), (req, res) => {
-    res.json({
-        url: `/uploads/${req.file.originalname}`,
-    });
-});
+ // Tasks routes
+app.get('/subject/:id/tasks/',checkSignIn,TaskController.getAll);
+app.get('/subject/task/:id',checkSignIn,TaskController.getOne);
+app.post('/subject/tasks/create',CheckSignIn,TaskCreateValidation,handleValidationErrors,TaskController.create)
+app.delete('/subject/task/:id',CheckSignIn,TaskController.remove);
+app.patch('/subject/task/:id',CheckSignIn,TaskEditValidation,handleValidationErrors,TaskController.edit);
+// app.post('/upload', CheckSignIn, upload.single('image'), (req, res) => {
+//     res.json({
+//         url: `/uploads/${req.file.originalname}`,
+//     });
+// });
 
 app.listen(4444, (err) => {
     if (err) {
