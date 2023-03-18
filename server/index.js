@@ -3,22 +3,13 @@ import mongoose from 'mongoose'
 import multer from 'multer'
 import fs from 'fs'
 import cors from 'cors'
-//VALIDATIONS
-import {
-    loginValidation,
-    SubjectCreateValidation,
-    registerValidation,
-    TaskCreateValidation,
-    TaskEditValidation
-} from "./validations/validations.js";
-//CONTROLLERS
-import {UserController, SubjectController,TaskController} from  './controllers/index.js'
-//UTILS
-import {handleValidationErrors, CheckSignIn} from "./utils/index.js";
-import checkSignIn from "./utils/CheckSignIn.js";
+// ROUTES
+
+import {authRoutes,subjectRoutes,TaskRoutes,ThemeRoutes,userRoutes} from "./routes/index.js"
 
 
-mongoose.connect('mongodb://192.168.43.140:27017')
+
+mongoose.connect('mongodb://admin:i58pR2aC67Z0fx27@84.23.54.55/Explain')
     .then(() => {
         console.log("Seccess connect to DB")
     })
@@ -43,27 +34,38 @@ const upload = multer({ storage });
 const app = express()
 app.use(express.json());
 app.use(cors());
+
+
 app.use('/uploads',express.static('uploads'));
 
-app.post('/signin',loginValidation,handleValidationErrors,UserController.login)
-app.post('/signup', registerValidation,handleValidationErrors, UserController.register);
-app.get('/profile',CheckSignIn, UserController.profile);
-app.delete('/users/delete/:id',CheckSignIn,UserController.remove)
+
+app.use('/auth',authRoutes); // auth's logic
+app.use('/users',userRoutes); // user's logic
+app.use('/subject',subjectRoutes); // subject's logic
+app.use('/theme',ThemeRoutes); // theme's logic
+app.use('/task',TaskRoutes);
 
 
-app.get('/subjects/',checkSignIn,SubjectController.getAll);
-app.get('/subject/:id',checkSignIn,SubjectController.getOne);
-app.post('/subject/create',CheckSignIn,SubjectCreateValidation,handleValidationErrors,SubjectController.create);
-app.delete('/subject/:id',CheckSignIn,SubjectController.remove);
-app.patch('/subject/:id',CheckSignIn,SubjectCreateValidation,handleValidationErrors,SubjectController.edit);
+
+// app.get('/subjects/',checkSignIn,SubjectController.getAll);
+
+// app.get('/subject/:id',checkSignIn,SubjectController.getOne);
+
+// app.post('/subject/create',CheckSignIn,SubjectCreateValidation,handleValidationErrors,SubjectController.CreateSubject);
 
 
+// app.delete('/subject/:id',CheckSignIn,SubjectController.remove);
+// app.patch('/subject/:id',CheckSignIn,SubjectCreateValidation,handleValidationErrors,SubjectController.edit);
+
+/*
  // Tasks routes
 app.get('/subject/:id/tasks/',checkSignIn,TaskController.getAll);
 app.get('/subject/task/:id',checkSignIn,TaskController.getOne);
-app.post('/subject/tasks/create',CheckSignIn,TaskCreateValidation,handleValidationErrors,TaskController.create)
+
+app.post('/subject/:id/task/create',CheckSignIn,TaskCreateValidation,handleValidationErrors,TaskController.create);
+
 app.delete('/subject/task/:id',CheckSignIn,TaskController.remove);
-app.patch('/subject/task/:id',CheckSignIn,TaskEditValidation,handleValidationErrors,TaskController.edit);
+app.patch('/subject/task/:id',CheckSignIn,TaskEditValidation,handleValidationErrors,TaskController.edit);*/
 // app.post('/upload', CheckSignIn, upload.single('image'), (req, res) => {
 //     res.json({
 //         url: `/uploads/${req.file.originalname}`,

@@ -20,15 +20,14 @@ export const SubjectCreateValidation = [
     body('desc','Input body of subject !').isLength({min:10}).isString(),
 ]
 
+export const ThemeCreateValidation = [
+    body('title','Input subject title').isLength({min:3}).isString(),
+    body('desc','Input body of subject !').isLength({min:10}).isString(),
+    body('subjectId','Have\'t category').isString(),
+]
 export const TaskCreateValidation = [
     body('title','Input subject title').isLength({min:3}).isString(),
     body('desc','Input body of subject !').isLength({min:10}).isString(),
     body('mark','Input mark for task').isFloat(),
-    body('subject','Have\'t category').isString(),
-]
-export const TaskEditValidation = [
-    body('title','Input subject title').isLength({min:3}).isString(),
-    body('desc','Input body of subject !').isLength({min:10}).isString(),
-    body('mark','Input mark for task').isFloat(),
-    body('subject','Have\'t category').isString(),
+    body('themeId','Have\'t category').isString(),
 ]

@@ -1,19 +1,29 @@
 import TaskModel from "../models/Task.js";
-import SubjectModel from "../models/Subject.js";
+import ThemeModel from "../models/Theme.js";
 export const create = async (req,res) =>{
     try{
-        const doc = new TaskModel({
+
+        const { title, desc, totalMarks,themeId} = req.body;
+        const newTask = new TaskModel({
             title :req.body.title,
             desc :req.body.desc,
-            subject : req.body.subject,
             bpCode : req.body.bpCode,
             imageTask : req.body.imageTask,
             mark: req.body.mark,
+            themeId
 
         })
 
 
-        const task = await doc.save();
+        const task = await newTask.save();
+
+        const addTaskToTheme = await ThemeModel.findOneAndUpdate(
+            { _id: themeId },
+            {
+              $push: { tasksId: task._id },
+            }
+          );
+
         res.json(task);
     } catch (e) {
         console.log(e);

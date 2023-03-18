@@ -71,7 +71,7 @@ export const profile = async (req,res)=>{
             return res.status(400).json({message:'User not found!'})
         }
         const {passwordHash,...userData} = user._doc;
-        res.json(userData)
+        res.json(userData);
 
     }catch (err) {
         console.log(err);
@@ -100,3 +100,4 @@ export const remove = async (req,res)=>{
         res.status(500).json({message: 'Don\'t have access! :('})
     }
 };
+
