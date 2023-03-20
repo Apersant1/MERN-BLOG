@@ -20,7 +20,7 @@ export const create = async (req, res) => {
     const theme = await newTheme.save();
 
     const addThemeToSubject = await SubjectModel.findOneAndUpdate(
-      { _id: subjectId },
+      { '_id': subjectId },
       {
         $push: { themes: theme._id },
       }
@@ -58,3 +58,28 @@ export const remove = async (req, res) => {
     res.status(400).json({ message: "Failed to delete Theme :(" });
   }
 };
+
+export const getOneTheme = async(req,res)=>{
+  try{
+    const {id} = req.params;
+    const task = await ThemeModel.findOne({
+      '_id':id
+    })
+    res.json(task)
+  } catch(e){
+    res.status(400).json({ message: "Failed to get Theme :(" });
+  }
+}
+
+export const getAllThemeOnSubject = async(req,res)=>{
+  try {
+    const {id} = req.params;
+    const allThmes = await ThemeModel.find({
+      "subjectId":id
+    })
+    res.json(allThmes);
+  } catch (error) {
+    res.status(400).json({ message: "Failed to get Theme :(" });
+    
+  }
+}

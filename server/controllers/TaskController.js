@@ -72,10 +72,10 @@ export const remove = async (req,res) =>{
     }
 }
 
-export const getAll = async (req, res) => {
+export const getAllTasksFromTheme = async (req, res) => {
     try {
-        const id = req.params.id;
-        const tasks = await TaskModel.find({"subject":id});
+        const {id} = req.params;
+        const tasks = await TaskModel.find({"themeId":id});
 
         res.json(tasks);
     } catch (err) {
@@ -84,9 +84,9 @@ export const getAll = async (req, res) => {
     }
 }
 
-export const getOne = async (req,res)=>{
+export const getOneTask = async (req,res)=>{
     try{
-        const id = req.params.id;
+        const {id} = req.params;
         const task = await TaskModel.findOne({"_id":id})
          res.json(task);
     } catch (err) {

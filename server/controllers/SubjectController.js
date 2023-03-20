@@ -94,9 +94,10 @@ export const getAll = async (req, res) => {
 
 export const getOne = async (req, res) => {
     try {
-        const stateSubject =  await SubjectModel.find({
-            _id:req.params.id
-        })
+      const {id} = req.params;
+        const stateSubject =  await SubjectModel.findOne({
+          '_id':id
+        });
         res.json(stateSubject);
     } catch (err) {
         console.log(err);

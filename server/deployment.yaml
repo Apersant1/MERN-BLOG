@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: explain-backend
+  labels:
+    app: explain-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: explain-server
+  template:
+    metadata:
+      labels:
+        app: explain-server
+    spec:
+      containers:
+      - name : explain-server
+        image: jasey/explain-server:v1
+        ports:
+        - containerPort: 4444
