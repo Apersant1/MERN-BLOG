@@ -16,6 +16,9 @@ const TaskSchema = new mongoose.Schema({
     bpCode:{
         type:String,
     },
+    bpLexems:{
+        type:String,
+    },
     imageTask:{
         type:String,
     },
